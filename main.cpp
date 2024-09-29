@@ -2,6 +2,6 @@
 using namespace std;
 
 int main(void){
-    cout << "Hello, git!";
+    cout << "Hello, github!";
     return 0;
 }

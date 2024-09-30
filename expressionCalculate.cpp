@@ -11,12 +11,12 @@ using namespace std;
 	加分：
 		乘方 单目减（负数） 赋值等运算的实现
 */
-int expressionCalculate(string s){
+bool expressionCalculate(string s, int& ret){
 	stack<char> opStk;
 	vector<string> expression;
 	stack<int> numStk;
 	for (int i = 0; i < s.size(); ++i){
-		if (s[i] == '*' || s[i] == '/'){
+		if (s[i] == '*' || s[i] == '/' || s[i] == '%'){
 			while (!opStk.empty() && !(opStk.top() == '+' || opStk.top() == '-' || opStk.top() == '(')){
 				char curr = opStk.top();
 				opStk.pop();
@@ -25,7 +25,7 @@ int expressionCalculate(string s){
 			opStk.push(s[i]);
 		}
 		else if (s[i] == ' ')  continue;
-		else if (s[i] == '+' || s[i] == '-'){
+		else if (s[i] == '+'){
 			while (!opStk.empty() && !(opStk.top() == '(')){
 				char curr = opStk.top();
 				opStk.pop();
@@ -45,13 +45,37 @@ int expressionCalculate(string s){
 			opStk.pop();
 		}
 		else if (s[i] == '^'){
-			while (!opStk.empty() && !(opStk.top() == '+'||opStk.top() == '-'||
-			opStk.top() == '*'||opStk.top() == '/'||opStk.top() == '(')){
+			while (!opStk.empty() && !(opStk.top() == '+'||opStk.top() == '-'|| opStk.top() == '@' ||
+			opStk.top() == '*'||opStk.top() == '/'||opStk.top() == '%' ||opStk.top() == '(')){
 				char curr = opStk.top();
 				opStk.pop();
 				expression.push_back(string(1,curr));
 			}
 			opStk.push(s[i]);
+		}
+		else if (s[i] == '-'){
+			int curIndex = i;
+			while (s[i] != ' ' && i >= 0){
+				i--;
+			}
+			if (isdigit(s[i])){
+				while (!opStk.empty() && !(opStk.top() == '(')){
+					char curr = opStk.top();
+					opStk.pop();
+					expression.push_back(string(1, curr));
+				}
+				opStk.push(s[curIndex]);
+			}
+			if (i < 0 || !isdigit(s[i])){
+				while (!opStk.empty() && !(opStk.top() == '+'||opStk.top() == '-' ||
+				opStk.top() == '*'||opStk.top() == '/'||opStk.top() == '%' ||opStk.top() == '(')){
+					char curr = opStk.top();
+					opStk.pop();
+					expression.push_back(string(1,curr));
+				}
+				opStk.push('@');
+			}
+			i = curIndex;
 		}
 		else{
 			string curr;
@@ -73,19 +97,31 @@ int expressionCalculate(string s){
 		if (x[0] >= '0' && x[0] <= '9'){
 			numStk.push(stoi(x));
 		}
+		else if (x[0] == '@'){
+			int top = numStk.top();
+			numStk.pop();
+			numStk.push(-top);
+		}
 		else{
 			int right = numStk.top();
 			numStk.pop();
 			int left = numStk.top();
 			numStk.pop();
-			int ret = -1;
 			if (x[0] == '+')  ret = left + right;
 			else if (x[0] == '-')  ret = left - right;
 			else if (x[0] == '*')  ret = left * right;
-			else if (x[0] == '/')  ret = left / right;
+			else if (x[0] == '/'){
+				if (right) ret = left / right;
+				else return false;
+			}
+			else if (x[0] == '%'){
+				if (right) ret = left % right;
+				else return false;
+			}
 			else  ret = (int)pow(left,(double)right);
 			numStk.push(ret);
 		}
 	}
-	return numStk.top();
+	ret = numStk.top();
+	return true;
 }

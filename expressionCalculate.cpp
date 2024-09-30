@@ -11,13 +11,13 @@ using namespace std;
 	加分：
 		乘方 单目减（负数） 赋值等运算的实现
 */
-int SecondCalculate(string s){
+int expressionCalculate(string s){
 	stack<char> opStk;
 	vector<string> expression;
 	stack<int> numStk;
 	for (int i = 0; i < s.size(); ++i){
 		if (s[i] == '*' || s[i] == '/'){
-			while (!opStk.empty() && !(opStk.top() == '+' || opStk.top() == '-')){
+			while (!opStk.empty() && !(opStk.top() == '+' || opStk.top() == '-' || opStk.top() == '(')){
 				char curr = opStk.top();
 				opStk.pop();
 				expression.push_back(string(1, curr));
@@ -26,10 +26,30 @@ int SecondCalculate(string s){
 		}
 		else if (s[i] == ' ')  continue;
 		else if (s[i] == '+' || s[i] == '-'){
-			while (!opStk.empty()){
+			while (!opStk.empty() && !(opStk.top() == '(')){
 				char curr = opStk.top();
 				opStk.pop();
 				expression.push_back(string(1, curr));
+			}
+			opStk.push(s[i]);
+		}
+		else if (s[i] == '('){
+			opStk.push(s[i]);
+		}
+		else if (s[i] == ')'){
+			while (opStk.top() != '('){
+				char curr = opStk.top();
+				opStk.pop();
+				expression.push_back(string(1,curr));
+			}
+			opStk.pop();
+		}
+		else if (s[i] == '^'){
+			while (!opStk.empty() && !(opStk.top() == '+'||opStk.top() == '-'||
+			opStk.top() == '*'||opStk.top() == '/'||opStk.top() == '(')){
+				char curr = opStk.top();
+				opStk.pop();
+				expression.push_back(string(1,curr));
 			}
 			opStk.push(s[i]);
 		}
@@ -62,7 +82,8 @@ int SecondCalculate(string s){
 			if (x[0] == '+')  ret = left + right;
 			else if (x[0] == '-')  ret = left - right;
 			else if (x[0] == '*')  ret = left * right;
-			else  ret = left / right;
+			else if (x[0] == '/')  ret = left / right;
+			else  ret = (int)pow(left,(double)right);
 			numStk.push(ret);
 		}
 	}

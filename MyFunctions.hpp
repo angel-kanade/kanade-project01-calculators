@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <stack>
+#include <math.h>
 using namespace std;
 
-int SecondCalculate(string s);
+int expressionCalculate(string s);

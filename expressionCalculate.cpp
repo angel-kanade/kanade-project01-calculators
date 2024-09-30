@@ -55,10 +55,11 @@ bool expressionCalculate(string s, int& ret){
 		}
 		else if (s[i] == '-'){
 			int curIndex = i;
-			while (s[i] != ' ' && i >= 0){
+			i--;
+			while (i >= 0 && s[i] == ' '){
 				i--;
 			}
-			if (isdigit(s[i])){
+			if (isdigit(s[i])||s[i] == ')'){
 				while (!opStk.empty() && !(opStk.top() == '(')){
 					char curr = opStk.top();
 					opStk.pop();
@@ -66,15 +67,15 @@ bool expressionCalculate(string s, int& ret){
 				}
 				opStk.push(s[curIndex]);
 			}
-			if (i < 0 || !isdigit(s[i])){
+			else if (i < 0 || (!isdigit(s[i])&&s[i] != ')')){
 				while (!opStk.empty() && !(opStk.top() == '+'||opStk.top() == '-' ||
 				opStk.top() == '*'||opStk.top() == '/'||opStk.top() == '%' ||opStk.top() == '(')){
 					char curr = opStk.top();
 					opStk.pop();
 					expression.push_back(string(1,curr));
 				}
-				opStk.push('@');
-			}
+				opStk.push('@');	//用‘@’符号表示单目负号
+			}						
 			i = curIndex;
 		}
 		else{

@@ -1,12 +1,17 @@
 #include <iostream>
 #include "MyFunctions.hpp"
+#include "MyClass.hpp"
 using namespace std;
 
 int main(void){
     string s;
     getline(cin,s);
-    int ret = -1;
-    if (expressionCalculate(s,ret)) cout << ret;
-    else cout << "ERROR";
+    try{
+        int result = expressionCalculate(s);
+        cout << result;
+    }
+    catch(exception& e){
+        cout << e.what();
+    }
     return 0;
 }

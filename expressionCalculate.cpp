@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include "MyFunctions.hpp"
+#include "MyClass.hpp"
 using namespace std;
 
 /*
@@ -11,7 +12,7 @@ using namespace std;
 	加分：
 		乘方 单目减（负数） 赋值等运算的实现
 */
-bool expressionCalculate(string s, int& ret){
+int expressionCalculate(string s){
 	stack<char> opStk;
 	vector<string> expression;
 	stack<int> numStk;
@@ -104,6 +105,7 @@ bool expressionCalculate(string s, int& ret){
 			numStk.push(-top);
 		}
 		else{
+			int ret = -1;
 			int right = numStk.top();
 			numStk.pop();
 			int left = numStk.top();
@@ -113,16 +115,18 @@ bool expressionCalculate(string s, int& ret){
 			else if (x[0] == '*')  ret = left * right;
 			else if (x[0] == '/'){
 				if (right) ret = left / right;
-				else return false;
+				else throw runtime_error("divide by zero");
 			}
 			else if (x[0] == '%'){
 				if (right) ret = left % right;
-				else return false;
+				else throw runtime_error("divide by zero");
 			}
-			else  ret = (int)pow(left,(double)right);
+			else { 
+				if (right >= 0) ret = (int)pow(left,(double)right);
+				else throw runtime_error("negative exponent isn't allowed");
+			}
 			numStk.push(ret);
 		}
 	}
-	ret = numStk.top();
-	return true;
+	return numStk.top();
 }

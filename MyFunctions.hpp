@@ -7,5 +7,4 @@
 #include <stdbool.h>
 using namespace std;
 
-
-bool expressionCalculate(string s, int & ret);
+int expressionCalculate(string s);

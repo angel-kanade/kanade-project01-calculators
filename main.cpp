@@ -13,5 +13,6 @@ int main(void){
     catch(exception& e){
         cout << e.what();
     }
+    system("pause");
     return 0;
 }

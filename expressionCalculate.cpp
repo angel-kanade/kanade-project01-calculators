@@ -115,15 +115,15 @@ int expressionCalculate(string s){
 			else if (x[0] == '*')  ret = left * right;
 			else if (x[0] == '/'){
 				if (right) ret = left / right;
-				else throw runtime_error("divide by zero");
+				else throw runtime_error("0不能作为除数喵");
 			}
 			else if (x[0] == '%'){
 				if (right) ret = left % right;
-				else throw runtime_error("divide by zero");
+				else throw runtime_error("0不能作为除数喵");
 			}
 			else { 
 				if (right >= 0) ret = (int)pow(left,(double)right);
-				else throw runtime_error("negative exponent isn't allowed");
+				else throw runtime_error("小于0的指数不支持喵");
 			}
 			numStk.push(ret);
 		}

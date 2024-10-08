@@ -2,44 +2,35 @@
 #include "MyClass.hpp"
 using namespace std;
 
-Polynomial::Polynomial(){
+Polynomial::Polynomial() {
     head = new PolyNode();
 }
 
-Polynomial::Polynomial(PolyNode* h):head(h){}
+Polynomial::Polynomial(PolyNode* h) : head(h) {}
 
-Polynomial::Polynomial(const Polynomial& p){
+Polynomial::Polynomial(const Polynomial& p) {
     head = new PolyNode(p.head->coefficient, p.head->exponent);
     PolyNode* curr = p.head->next;
     PolyNode* temp = head;
-    while(curr!= nullptr){
+    while (curr != nullptr) {
         temp->next = new PolyNode(curr->coefficient, curr->exponent);
         curr = curr->next;
         temp = temp->next;
     }
 }
 
-Polynomial::~Polynomial(){
-    PolyNode* curr = head;
-    while(curr!= nullptr){
-        PolyNode* temp = curr;
-        curr = curr->next;
-        delete temp;
-    }
+Polynomial::~Polynomial() {
+    clear();
+    delete head;
 }
 
-Polynomial& Polynomial::operator=(const Polynomial& p){
-    if (head != p.head){
-        PolyNode* curr = head;
-        while(curr!= nullptr){
-            PolyNode* temp = curr;
-            curr = curr->next;
-            delete temp;
-        }
+Polynomial& Polynomial::operator=(const Polynomial& p) {
+    if (this != &p) {
+        clear();
         head = new PolyNode(p.head->coefficient, p.head->exponent);
-        curr = p.head->next;
+        PolyNode* curr = p.head->next;
         PolyNode* temp = head;
-        while(curr!= nullptr){
+        while (curr != nullptr) {
             temp->next = new PolyNode(curr->coefficient, curr->exponent);
             curr = curr->next;
             temp = temp->next;
@@ -48,97 +39,80 @@ Polynomial& Polynomial::operator=(const Polynomial& p){
     return *this;
 }
 
-Polynomial Polynomial::operator+(const Polynomial& p) const{
+Polynomial Polynomial::operator+(const Polynomial& p) const {
     Polynomial result;
     PolyNode* curr1 = head->next;
     PolyNode* curr2 = p.head->next;
-    PolyNode* temp = result.head;
-    while(curr1!= nullptr && curr2!= nullptr){
-        if(curr1->exponent == curr2->exponent){
-            temp->next = new PolyNode(curr1->coefficient + curr2->coefficient, curr1->exponent);
+    while (curr1 != nullptr && curr2 != nullptr) {
+        if (curr1->exponent == curr2->exponent) {
+            result.Insert(curr1->coefficient + curr2->coefficient, curr1->exponent);
             curr1 = curr1->next;
             curr2 = curr2->next;
-            temp = temp->next;
-        }
-        else if(curr1->exponent < curr2->exponent){
-            temp->next = new PolyNode(curr2->coefficient, curr2->exponent);
+        } else if (curr1->exponent < curr2->exponent) {
+            result.Insert(curr2->coefficient, curr2->exponent);
             curr2 = curr2->next;
-            temp = temp->next;
-        }
-        else{
-            temp->next = new PolyNode(curr1->coefficient, curr1->exponent);
+        } else {
+            result.Insert(curr1->coefficient, curr1->exponent);
             curr1 = curr1->next;
-            temp = temp->next;
         }
     }
-    while(curr1!= nullptr){
-        temp->next = new PolyNode(curr1->coefficient, curr1->exponent);
+    while (curr1 != nullptr) {
+        result.Insert(curr1->coefficient, curr1->exponent);
         curr1 = curr1->next;
-        temp = temp->next;
     }
-    while(curr2!= nullptr){
-        temp->next = new PolyNode(curr2->coefficient, curr2->exponent);
+    while (curr2 != nullptr) {
+        result.Insert(curr2->coefficient, curr2->exponent);
         curr2 = curr2->next;
-        temp = temp->next;
-    }
-    return result;
-}
-Polynomial Polynomial::operator-(const Polynomial& p) const{
-    Polynomial result;
-    PolyNode* curr1 = head->next;
-    PolyNode* curr2 = p.head->next;
-    PolyNode* temp = result.head;
-    while(curr1!= nullptr && curr2!= nullptr){
-        if(curr1->exponent == curr2->exponent){
-            temp->next = new PolyNode(curr1->coefficient - curr2->coefficient, curr1->exponent);
-            curr1 = curr1->next;
-            curr2 = curr2->next;
-            temp = temp->next;
-        }
-        else if(curr1->exponent < curr2->exponent){
-            temp->next = new PolyNode(-curr2->coefficient, curr2->exponent);
-            curr2 = curr2->next;
-            temp = temp->next;
-        }
-        else{
-            temp->next = new PolyNode(curr1->coefficient, curr1->exponent);
-            curr1 = curr1->next;
-            temp = temp->next;
-        }
-    }
-    while(curr1!= nullptr){
-        temp->next = new PolyNode(curr1->coefficient, curr1->exponent);
-        curr1 = curr1->next;
-        temp = temp->next;
-    }
-    while(curr2!= nullptr){
-        temp->next = new PolyNode(-curr2->coefficient, curr2->exponent);
-        curr2 = curr2->next;
-        temp = temp->next;
     }
     return result;
 }
 
-void Polynomial::Insert(int c, int e){
+Polynomial Polynomial::operator-(const Polynomial& p) const {
+    Polynomial result;
+    PolyNode* curr1 = head->next;
+    PolyNode* curr2 = p.head->next;
+    while (curr1 != nullptr && curr2 != nullptr) {
+        if (curr1->exponent == curr2->exponent) {
+            result.Insert(curr1->coefficient - curr2->coefficient, curr1->exponent);
+            curr1 = curr1->next;
+            curr2 = curr2->next;
+        } else if (curr1->exponent < curr2->exponent) {
+            result.Insert(-curr2->coefficient, curr2->exponent);
+            curr2 = curr2->next;
+        } else {
+            result.Insert(curr1->coefficient, curr1->exponent);
+            curr1 = curr1->next;
+        }
+    }
+    while (curr1 != nullptr) {
+        result.Insert(curr1->coefficient, curr1->exponent);
+        curr1 = curr1->next;
+    }
+    while (curr2 != nullptr) {
+        result.Insert(-curr2->coefficient, curr2->exponent);
+        curr2 = curr2->next;
+    }
+    return result;
+}
+
+void Polynomial::Insert(double c, int e) {
     PolyNode* curr = head;
-    while(curr->next != nullptr && curr->next->exponent < e){
+    while (curr->next != nullptr && curr->next->exponent > e) {
         curr = curr->next;
     }
-    if(curr->next == nullptr || curr->next->exponent > e){
-        curr->next = new PolyNode(c, e);
-    }
-    else{
-        curr->next->coefficient = c;
+    if (curr->next == nullptr || curr->next->exponent < e) {
+        curr->next = new PolyNode(c, e, curr->next); 
+    } else {
+        curr->next->coefficient += c; 
     }
 }
 
-Polynomial Polynomial::operator*(const Polynomial& p) const{
+Polynomial Polynomial::operator*(const Polynomial& p) const {
     Polynomial result;
     PolyNode* curr1 = head->next;
-    PolyNode* curr2 = p.head->next;
-    while(curr1 != nullptr){
-        curr2 = p.head->next;
-        while(curr2 != nullptr){
+    while (curr1 != nullptr) {
+        PolyNode* curr2 = p.head->next;
+        while (curr2 != nullptr) {
             int new_exponent = curr1->exponent + curr2->exponent;
             int new_coefficient = curr1->coefficient * curr2->coefficient;
             result.Insert(new_coefficient, new_exponent);
@@ -149,19 +123,19 @@ Polynomial Polynomial::operator*(const Polynomial& p) const{
     return result;
 }
 
-Polynomial Polynomial::operator*(int k)const{
+Polynomial Polynomial::operator*(int k) const {
     Polynomial result;
     PolyNode* curr = head->next;
-    while(curr != nullptr){
+    while (curr != nullptr) {
         result.Insert(curr->coefficient * k, curr->exponent);
         curr = curr->next;
     }
     return result;
 }
 
-void Polynomial::clear(){
+void Polynomial::clear() {
     PolyNode* curr = head->next;
-    while(curr != nullptr){
+    while (curr != nullptr) {
         PolyNode* temp = curr;
         curr = curr->next;
         delete temp;
@@ -169,119 +143,131 @@ void Polynomial::clear(){
     head->next = nullptr;
 }
 
-istream& operator>>(istream& i, Polynomial& p){
+istream& operator>>(istream& i, Polynomial& p) {
     string s;
-    do{
+    do {
         cout << "请输入对应指令：\n";
         cout << "1.输入\"Mode1\": 通过输入系数和指数创造或添加多项式\n";
         cout << "2.输入\"Mode2\": 通过输入多项式的形式创造或添加多项式\n";
         cout << "3.输入\"Restart\": 清空当前创建的多项式并重新输入\n";
         cout << "4.输入\"End\"：结束输入\n";
-        getline(i,s);
-        while(s != "End" && s != "Mode1" && s != "Mode2" && s != "Restart"){
+        getline(i, s);
+        while (s != "End" && s != "Mode1" && s != "Mode2" && s != "Restart") {
             cout << "输入无效，请重新输入喵：\n";
-            getline(i,s);
+            getline(i, s);
         }
-        if(s == "Mode1"){
-            while(true){
+        if (s == "Mode1") {
+            string curr;
+            while (true) {
                 cout << "目前输入模式为Mode1，通过输入系数和指数创造或添加多项式\n";
-                cout << "是否需要退出当前模式？如是请输入\"Exit\"，否则请输入\"Continue\"\n";
-                string curr;
-                getline(i,curr);
-                if (curr == "Exit"){
+                cout << "目前的多项式为：\n";
+                cout << p << endl;
+                cout << "是否需要退出当前模式？如是请输入\"Exit\"，否则请输入其他任意字符\n";
+                curr.clear();
+                getline(i, curr);
+                if (curr == "Exit") {
                     cout << "已退出Mode1\n";
                     cout << "目前的多项式为：\n";
-                    cout << p;
+                    cout << p << endl;
                     break;
-                }
-                else{
+                } else {
                     cout << "请输入你要添加的项的系数：";
-                    int c;
+                    double c;
                     cin >> c;
+                    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); 
                     int e;
                     cout << "请输入你要添加的项的指数：";
                     cin >> e;
+                    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); 
                     p.Insert(c, e);
                     cout << "已成功添加项!" << endl;
                     cout << "目前的多项式为：\n";
-                    cout << p;
+                    cout << p << endl;
                 }
             }
-        }
-        else if(s == "Mode2"){
-            while(true){
+        } else if (s == "Mode2") {
+            string curr;
+            while (true) {
                 cout << "目前输入模式为Mode2，通过输入多项式的形式创造或添加多项式\n";
-                cout << "是否需要退出当前模式？如是请输入\"Exit\"，否则请输入\"Continue\"\n";
-                string curr;
-                getline(i,curr);
-                if (curr == "Exit"){
+                cout << "目前的多项式为：\n";
+                cout << p << endl;
+                cout << "是否需要退出当前模式？如是请输入\"Exit\"，否则请输入其他任意字符\n";
+                curr.clear();
+                getline(i, curr);
+                if (curr == "Exit") {
                     cout << "已退出Mode2\n";
                     cout << "目前的多项式为：\n";
-                    cout << p;
+                    cout << p << endl;
                     break;
                 }
                 cout << "请输入多项式的形式，如Ax^a+Bx^b+Cx^c，其中A,B,C为系数，a,b,c为指数\n";
                 cout << "请根据上述形式输入想添加的多项式：\n";
                 string cur;
-                getline(i,cur);
+                getline(i, cur);
                 int pos = 0;
-                while (pos < cur.length()){
-                    int nextPos = cur.find_first_of("+-", pos);
+                int nextFind = pos;
+                while (pos < cur.length()) {
+                    int nextPos = cur.find_first_of("+-", nextFind);
                     string term;
-                    if (nextPos == string::npos){
+                    if (nextPos == string::npos) {
                         term = cur.substr(pos);
                         pos = cur.length();
-                    }
-                    else{
+                    } else if (nextFind == nextPos){
+                        nextPos = cur.find_first_of("+-", nextFind + 1);
+                        if (nextPos == string::npos) {
+                            term = cur.substr(pos);
+                            pos = cur.length();
+                        } else {
+                            term = cur.substr(pos, nextPos - pos);
+                            pos = nextPos;
+                            nextFind = pos + 1;
+                        }
+                    }else {
                         term = cur.substr(pos, nextPos - pos);
                         pos = nextPos;
+                        nextFind = pos + 1;
                     }
                     int sign = 1;
-                    if (term[0] == '-'){
+                    if (term[0] == '-') {
                         sign = -1;
                         term = term.substr(1);
-                    }
-                    else if (term[0] == '+'){
+                    } else if (term[0] == '+') {
                         term = term.substr(1);
                     }
-                    int coef = 1;
+                    double coef = 1;
                     int exp = 0;
                     int xPos = term.find('x');
-                    if (xPos != string::npos){
-                        if (xPos > 0){
-                            coef = stoi(term.substr(0, xPos)) * sign;
-                        }
-                        else coef = sign;
+                    if (xPos != string::npos) {
+                        if (xPos > 0) {
+                            coef = stod(term.substr(0, xPos)) * sign;
+                        } else coef = sign;
                         int caretPos = term.find('^', xPos);
-                        if (caretPos != string::npos){
+                        if (caretPos != string::npos) {
                             exp = stoi(term.substr(caretPos + 1));
-                        }
-                        else{
+                        } else {
                             exp = 1;
                         }
-                    }
-                    else{
-                        coef = stoi(term) * sign;
+                    } else {
+                        coef = stod(term) * sign;
                         exp = 0;
                     }
                     p.Insert(coef, exp);
                 }
                 cout << "已成功添加项!" << endl;
                 cout << "目前的多项式为：\n";
-                cout << p;
+                cout << p << endl;
             }  
-        }
-        else if(s == "Restart"){
+        } else if (s == "Restart") {
             p.clear();
             cout << "已清空当前创建的多项式！\n";
         }
-    }while(s != "End");
+    } while (s != "End");
     return i;
 }
 
 ostream& operator<<(ostream& o, const Polynomial& p) {
     PolyNode* curr = p.head->next;
-    bool isFirst = true; // 用于判断是否是第一个有效项
+    bool isFirst = true; 
     while (curr != nullptr) {
         if (curr->coefficient != 0) {
             if (!isFirst) {
@@ -293,16 +279,16 @@ ostream& operator<<(ostream& o, const Polynomial& p) {
                 if (curr->coefficient != 1 && curr->coefficient != -1) {
                     o << curr->coefficient;
                 } else if (curr->coefficient == -1) {
-                    o << "-"; // 处理 -1 的情况
+                    o << "-"; 
                 }
                 o << "x";
                 if (curr->exponent != 1) {
                     o << "^" << curr->exponent;
                 }
             } else {
-                o << curr->coefficient; // 输出常数项
+                o << curr->coefficient; 
             }
-            isFirst = false; // 标记为已经输出过第一个项
+            isFirst = false; 
         }
         curr = curr->next;
     }
@@ -310,21 +296,21 @@ ostream& operator<<(ostream& o, const Polynomial& p) {
     return o;
 }
 
-int Polynomial::calculate(int x) const{
+int Polynomial::calculate(int x) const {
     int result = 0;
     PolyNode* curr = head->next;
-    while(curr != nullptr){
+    while (curr != nullptr) {
         result += curr->coefficient * pow(x, curr->exponent);
         curr = curr->next;
     }
     return result;
 }
 
-Polynomial Polynomial::derivative() const{
+Polynomial Polynomial::derivative() const {
     Polynomial result;
     PolyNode* curr = head->next;
-    while(curr != nullptr){
-        if(curr->exponent != 0){
+    while (curr != nullptr) {
+        if (curr->exponent != 0) {
             result.Insert(curr->exponent * curr->coefficient, curr->exponent - 1);
         }
         curr = curr->next;

@@ -6,11 +6,11 @@ using namespace std;
     coeffient为系数，exponent为指数，next为下一个节点的指针。
 */
 typedef struct PolyNode{
-    int coefficient;
+    double coefficient;
     int exponent;
     struct PolyNode* next;
 
-    PolyNode(int c = 0, int e = 0 , struct PolyNode* n = nullptr):coefficient(c),exponent(e),next(n){}
+    PolyNode(double c = 0, int e = 0 , struct PolyNode* n = nullptr):coefficient(c),exponent(e),next(n){}
 }PolyNode;
 
 /*
@@ -29,11 +29,11 @@ class Polynomial{
         ~Polynomial();
         Polynomial operator+(const Polynomial& other) const;
         Polynomial operator-(const Polynomial& other) const;
-        int calculate(int x) const;         
+        double calculate(double x) const;         
         Polynomial derivative() const;    
-        void Insert(int c, int e);
+        void insert(double c, int e);
         Polynomial operator*(const Polynomial& other) const;
-        Polynomial operator*(int k) const;
+        Polynomial operator*(double k) const;
         Polynomial& operator=(const Polynomial& other);
         void clear();
         friend ostream& operator<<(ostream& o, const Polynomial& p);           

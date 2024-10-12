@@ -395,7 +395,10 @@ double Polynomial::calculate(double x) const {
     // 遍历多项式并计算结果
     while (curr != nullptr) {
         if (curr->exponent >= 0) result += curr->coefficient * pow(x, curr->exponent);  // 累加每一项的结果
-        else result += curr->coefficient / pow(x, -curr->exponent);  // 负指数项需要除以 x 的绝对值
+        else {
+            if (x == 0) throw invalid_argument("0不能作除数喵");
+            result += curr->coefficient / pow(x, -curr->exponent);
+        }  // 负指数项需要除以 x 的绝对值
         curr = curr->next;  // 移动到下一个节点
     }
     return result;  // 返回计算结果

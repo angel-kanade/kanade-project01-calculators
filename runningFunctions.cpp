@@ -27,7 +27,13 @@ void runningPolynomialCalculator() {
             double x;
             cin >> x;
             cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); 
-            cout << "多项式" << p << "在" << x << "处的值为：" << endl << p.calculate(x) << endl << endl;
+            try{
+                double ret = p.calculate(x);
+                cout << "多项式" << p << "在" << x << "处的值为：" << endl << ret << endl << endl;
+            }
+            catch(const std::invalid_argument& e){
+                cout << e.what() << endl<< endl;
+            }
         }
         else if (input == "2") {
             Polynomial p;
